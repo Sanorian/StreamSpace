@@ -4,11 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create New Post</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <p>Enter post name</p>
-    <input>
-    <p>Enter the post itself</p>
-    <textarea></textarea>
+    <header>
+        <div class="two buttons">
+            <button class="button_light">Category</button>
+            <button class="button_light" onclick="location.href = 'index.html';">Return to main page</button>
+        </div>
+        <button class="button_light">Change Theme</button>
+    </header>
+    <div class="post_enter">
+        <h2>Enter name of the post:</h2>
+        <input id="input">
+        <h2>Choose Category:</h2>
+        <select id="select">
+            <option value="unchosen">Unchosen</option>
+            <option value="Frontend">Frontend</option>
+            <option value="Backend">Backend</option>
+            <option value="DevOps">DevOps</option>
+            <option value="UI/UX">UI/UX</option>
+        </select>
+        <h2>Enter the post itself:</h2>
+        <textarea id="textarea"></textarea>
+        <button id="sendButton">Send</button>
+    </div>
+    <script src="post_app.js"></script>
 </body>
 </html>
