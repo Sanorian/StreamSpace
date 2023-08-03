@@ -21,6 +21,10 @@ textarea.oninput = function(){
     localStorage.setItem('textarea', textarea.value);
 }
 
+function openFileOption(){
+    document.getElementById("file1").click();
+}
+
 function isGood(text){
     let badWords = 0;
     let censoredWords = ['ass', 'asses', 'asshole',
