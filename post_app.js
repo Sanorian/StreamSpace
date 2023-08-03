@@ -36,7 +36,7 @@ function isGood(text){
     'nigga', 'nigger', 'paki', 'prick', 'pussy'];
     text = text.toLowerCase();
     censoredWords.forEach(censoredWord =>{
-        if (text.indexOf(censoredWord)!=-1){badWords+=1}
+        if (text.indexOf(censoredWord)!=-1){badWords+=1;}
         });
     if (badWords!=0){return false;}
     else {return true;}
