@@ -17,13 +17,10 @@ button{
     background-color: #7286D3;
     font-family: 'Nunito', sans-serif;
     font-family: 'Poppins', sans-serif;
+    transition: background-color .25s ease;
 }
-.button_hover{
-    border-radius: 2vmin;
-    padding: 1vmin;
+button:hover{
     background-color: #5879ff;
-    font-family: 'Nunito', sans-serif;
-    font-family: 'Poppins', sans-serif; 
 }
 .post_enter{
     margin-top: 3vmin;
