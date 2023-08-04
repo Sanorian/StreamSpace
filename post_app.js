@@ -9,7 +9,8 @@ sendButtton.onclick = function(){
     let category = select.value;
     if (isGood(postName) && isGood(postText)){
         const sqlite3 = require('sqlite3').verbose();
-        let db = new sqlite3.Database(':data:');
+        let db = new sqlite3.Database('data.db', sqlite3.OPEN_READWRITE);
+
     }
 }
 input.oninput = function(){
