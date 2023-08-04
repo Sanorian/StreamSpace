@@ -69,11 +69,20 @@ main{
 .post{
     width:60vmin;
     padding: 3vmin;
-    border: 2px solid black;
+    background-color: rgb(236, 235, 243);
+    border-radius: 3vmin;
 }
 p{
     word-wrap: break-word;
 }
 .additional_data{
     margin-bottom: 1vmin;
+}
+.rules{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 70%;
+    margin-left: 15%;
+    margin-right: 15%;
 }

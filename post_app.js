@@ -8,7 +8,8 @@ sendButtton.onclick = function(){
     let postText = textarea.value;
     let category = select.value;
     if (isGood(postName) && isGood(postText)){
-
+        const sqlite3 = require('sqlite3').verbose();
+        let db = new sqlite3.Database(':data:');
     }
 }
 input.oninput = function(){
@@ -37,7 +38,7 @@ function isGood(text){
     'retard', 'sadist', 'shit', 'sh!t', 'shithead',
     'shitting', 'shitty', 'slut', 'sluts', 'smut', 'whore',
     'whores', 'xxx', 'damn', 'fag', 'fcuk', 'faggot',
-    'nigga', 'nigger', 'paki', 'prick', 'pussy'];
+    'nigga', 'nigger', 'paki', 'prick', 'pussy', 'cum'];
     text = text.toLowerCase();
     censoredWords.forEach(censoredWord =>{
         if (text.indexOf(censoredWord)!=-1){badWords+=1;}
