@@ -15,25 +15,25 @@
         <button class="button_light">Change Theme</button>
     </header>
     <div class="post_enter">
-        <h2>Enter name of the post:</h2>
-        <input id="input">
-        <h2>Choose Category:</h2>
-        <select id="select">
-            <option value="unchosen">Unchosen</option>
-            <option value="politic">Politic</option>
-            <option value="frontend">Frontend</option>
-            <option value="backend">Backend</option>
-            <option value="devops">DevOps</option>
-            <option value="ui/ux">UI/UX</option>
-            <option value="cooking">Cooking</option>
-            <option value="physic">Physic</option>
-            <option value="learning">Learning</option>
-        </select>
-        <h2>Enter the post itself:</h2>
-        <textarea id="textarea"></textarea>
-        <input type="file" id="file1" style="display:none">
-        <button onclick="openFileOption();return;" class="additional_data">Add files</button>
-        <button id="sendButton">Send</button>
+        <form action="http://localhost:8080/send_data" method="POST">
+            <h2>Enter name of the post:</h2>
+            <input id="input" name="postname">
+            <h2>Choose Category:</h2>
+            <select id="select" name="category">
+                <option value="unchosen">Unchosen</option>
+                <option value="politic">Politic</option>
+                <option value="frontend">Frontend</option>
+                <option value="backend">Backend</option>
+                <option value="devops">DevOps</option>
+                <option value="ui/ux">UI/UX</option>
+                <option value="cooking">Cooking</option>
+                <option value="physic">Physic</option>
+                <option value="learning">Learning</option>
+            </select>
+            <h2>Enter the post itself:</h2>
+            <textarea id="textarea" name="posttext"></textarea>
+            <button type="submit" id="sendButton">Send</button>
+        </form>
         <p>By submitting this form, you accept the copyright waiver <a href="agreement.html">agreement</a> for the information provided by you and undertake to follow the <a href="rules.html">rules</a> of StreamSpace</p>
     </div>
     <script src="post_app.js"></script>
