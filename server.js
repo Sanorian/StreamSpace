@@ -1,22 +1,19 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
-const router = express.Router();
 
 app.use(bodyParser.urlencoded({ extended: true })); 
 
 app.post('/send_data', (req, res)=>{
-    postName = req.body.postname;
-    category = req.body.category;
-    postText = req.body.posttext;
+    res.header('Access-Control-Allow-Origin', '*');
     if (isGood(postName) && isGood(postText)){
         // Открытие базы
         let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
         if (err) {
             console.error(err.message);
         }
-        console.log('Connected to the database.');
         });
         // Главный запрос
         db.run(`INSERT INTO main(postname, category, posttext) VALUES(?, ?, ?)`, [postName, category, postText], function(err) {
@@ -31,38 +28,75 @@ app.post('/send_data', (req, res)=>{
         if (err) {
             return console.error(err.message);
         }
-        console.log('Close the database connection.');
         });
+        
     }
+    console.log('Sending post');
 });
 
-app.post('/posts', async (req, res) => {
-    let posts;
-    console.log('Posts works!')
+app.get('/', function (req, res) {
+    res.header('Access-Control-Allow-Origin', '*');
     let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
         if (err) {
-            console.error(err.message);
+            reject(err.message);
         }
-        console.log('Connected to the database.');
-        });
-        // Главный запрос
-    db.all('SELECT * FROM main', (err, rows) => {
+      });
+      //main request
+      db.all('SELECT * FROM main', (err, rows) => {
             if (err) {
-              console.error(err.message);
+              console.log(err);
             }
-            posts = rows;
-        });
-        // get the last insert id
-        // Закрытие базы
-    db.close( (err) => {
+            let posts = '';
+            rows.forEach(post =>{
+                posts += '<div class="post"><h3>'+ post.postname +'</h3><p class="text">'+ post.posttext +'</p></div>';
+              });
+            fs.readFile('index.html', 'utf8', (err, data) => {
+              if (err) throw err;
+            
+              // Modify the HTML
+              let pageArray = [];
+              pageArray.push(data.split('<main>')[0]+'<main>');
+              pageArray.push('</main></body></html>');
+              const modifiedData = pageArray[0]+posts+pageArray[1];
+            
+              // Write the modified HTML back to the file
+              fs.writeFile('index.html', modifiedData, 'utf8', (err) => {
+                if (err) throw err;
+                res.sendFile(__dirname+'/index.html');
+              });
+            });
+  
+      });
+      // closing db
+      db.close( (err) => {
         if (err) {
-            return console.error(err.message);
+            reject(err.message);
         }
-        console.log('Close the database connection.');
-  res.json(posts); // отправка данных на сайт в формате JSON
+      });
+      console.log('Uploading main page');
 });
+app.get('/styles.css', function(req, res) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.sendFile(__dirname + '/styles.css');
 });
-
+  
+app.get('/app.js', function(req, res) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.sendFile(__dirname + '/app.js');
+});
+app.get('/new_post', function(req, res) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.sendFile(__dirname + '/new_post.html');
+});
+app.get('/post-app.js', function(req, res) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.sendFile(__dirname + '/post_app.js');
+});
+app.get('/rules', function(req, res) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.sendFile(__dirname + '/rules.html');
+});
+  
 port=8080;
 app.listen(port, () => {
     console.log(`Server running on port${port}`);
@@ -88,4 +122,3 @@ function isGood(text){
     if (badWords!=0){return false;}
     else {return true;}
 }
-module.exports = router;

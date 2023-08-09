@@ -1,27 +1,23 @@
-const http = require('http');
-
-const options = {
-  hostname: 'localhost',
-  port: 8080,
-  path: '/posts',
-  method: 'POST'
+const xhr = new XMLHttpRequest();
+xhr.open('POST', 'localhost:8080/posts');
+xhr.setRequestHeader('Content-Type', 'application/json');
+xhr.onload = function() {
+  if (xhr.status === 200) {
+    const data = JSON.parse(xhr.responseText);
+    console.log(data);
+  } else {
+    console.error('Error:', xhr.statusText);
+  }
 };
-
-const req = http.request(options, (res) => {
-  console.log(res.statusCode);s
-
-  res.on('data', (chunk) => {
-    // Обрабатываем полученные данные
-    console.log(chunk);
-  });
-
-  res.on('end', () => {
-    console.log('Запрос завершен');
-  });
-});
-
-req.on('error', (error) => {
-  console.error(error);
-});
-
-req.end()
+xhr.onerror = function() {
+  console.error('Error:', xhr.statusText);
+};
+xhr.send();
+fetch('http://localhost:8080/posts')
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+      })
+      .catch(error => {
+        console.error(error);
+      });

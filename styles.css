@@ -71,6 +71,7 @@ main{
     padding: 3vmin;
     background-color: rgb(236, 235, 243);
     border-radius: 3vmin;
+    margin: 1vmin;
 }
 p{
     word-wrap: break-word;
