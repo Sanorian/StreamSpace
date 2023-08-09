@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-sqlite3 = require('sqlite3').verbose();
+const sqlite3 = require('sqlite3').verbose();
+const router = express.Router();
 
 app.use(bodyParser.urlencoded({ extended: true })); 
 
@@ -34,6 +35,34 @@ app.post('/send_data', (req, res)=>{
         });
     }
 });
+
+app.post('/posts', async (req, res) => {
+    let posts;
+    console.log('Posts works!')
+    let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        console.log('Connected to the database.');
+        });
+        // Главный запрос
+    db.all('SELECT * FROM main', (err, rows) => {
+            if (err) {
+              console.error(err.message);
+            }
+            posts = rows;
+        });
+        // get the last insert id
+        // Закрытие базы
+    db.close( (err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Close the database connection.');
+  res.json(posts); // отправка данных на сайт в формате JSON
+});
+});
+
 port=8080;
 app.listen(port, () => {
     console.log(`Server running on port${port}`);
@@ -59,3 +88,4 @@ function isGood(text){
     if (badWords!=0){return false;}
     else {return true;}
 }
+module.exports = router;
