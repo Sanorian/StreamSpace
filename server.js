@@ -46,10 +46,14 @@ app.get('/', function (req, res) {
             if (err) {
               console.log(err);
             }
-            let posts = '';
+            let posts = [];
             rows.forEach(post =>{
-                posts += '<div class="post"><h3>'+ post.postname +'</h3><p class="text">'+ post.posttext +'</p></div>';
+                posts.push('<div class="post"><h3>'+ post.postname +'</h3><p class="text">'+ post.posttext +'</p></div>');
               });
+            let allposts = '';
+            for (let len=posts.length-1; len>=0;len--){
+                allposts+=posts[len];
+            }
             fs.readFile('index.html', 'utf8', (err, data) => {
               if (err) throw err;
             
@@ -57,7 +61,7 @@ app.get('/', function (req, res) {
               let pageArray = [];
               pageArray.push(data.split('<main>')[0]+'<main>');
               pageArray.push('</main></body></html>');
-              const modifiedData = pageArray[0]+posts+pageArray[1];
+              const modifiedData = pageArray[0]+ allposts +pageArray[1];
             
               // Write the modified HTML back to the file
               fs.writeFile('index.html', modifiedData, 'utf8', (err) => {
@@ -75,12 +79,12 @@ app.get('/', function (req, res) {
       });
       console.log('Uploading main page');
 });
-app.get('/styles.css', function(req, res) {
+app.get('/styles', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');
     res.sendFile(__dirname + '/styles.css');
 });
   
-app.get('/app.js', function(req, res) {
+app.get('/app', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');
     res.sendFile(__dirname + '/app.js');
 });
@@ -88,7 +92,7 @@ app.get('/new_post', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');
     res.sendFile(__dirname + '/new_post.html');
 });
-app.get('/post-app.js', function(req, res) {
+app.get('/post-app', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');
     res.sendFile(__dirname + '/post_app.js');
 });
