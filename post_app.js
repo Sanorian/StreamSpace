@@ -12,3 +12,8 @@ select.oninput = function(){
 textarea.oninput = function(){
     localStorage.setItem('textarea', textarea.value);
 }
+textarea.addEventListener('keydown', function(event) {
+    if (event.keyCode === 13 || event.which === 13) {
+        textarea.value+='<br>';
+    }
+  });

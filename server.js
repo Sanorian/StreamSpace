@@ -7,9 +7,13 @@ const sqlite3 = require('sqlite3').verbose();
 app.use(bodyParser.urlencoded({ extended: true })); 
 
 app.post('/send_data', (req, res)=>{
+    postName = req.body.postname;
+    category = req.body.category;
+    postText =req.body.posttext;
     res.header('Access-Control-Allow-Origin', '*');
     if (isGood(postName) && isGood(postText)){
         // Открытие базы
+        console.log('Post is good')
         let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
         if (err) {
             console.error(err.message);
@@ -21,7 +25,7 @@ app.post('/send_data', (req, res)=>{
             return console.log(err.message);
         }
         // get the last insert id
-        console.log(`A row has been inserted with rowid ${this.lastID}`);
+        console.log('Post sended');
         });
         // Закрытие базы
         db.close((err) => {
@@ -30,8 +34,9 @@ app.post('/send_data', (req, res)=>{
         }
         });
         
+    } else {
+        console.log('Post isn`t good');
     }
-    console.log('Sending post');
 });
 
 app.get('/', function (req, res) {
@@ -46,13 +51,9 @@ app.get('/', function (req, res) {
             if (err) {
               console.log(err);
             }
-            let posts = [];
-            rows.forEach(post =>{
-                posts.push('<div class="post"><h3>'+ post.postname +'</h3><p class="text">'+ post.posttext +'</p></div>');
-              });
             let allposts = '';
-            for (let len=posts.length-1; len>=0;len--){
-                allposts+=posts[len];
+            for (let len=rows.length-1; len>=0;len--){
+                allposts+='<div class="post"><h3>'+ rows[len].postname +'</h3><p class="text" style="white-space: pre-line">'+rows[len].posttext +'</p></div>'
             }
             fs.readFile('index.html', 'utf8', (err, data) => {
               if (err) throw err;
@@ -108,16 +109,16 @@ app.listen(port, () => {
 
 function isGood(text){
     let badWords = 0;
-    let censoredWords = ['ass', 'asses', 'asshole',
+    let censoredWords = ['asshole',
     'bastard', 'bestial', 'bitch', 'boobs','boob',
     'bullshit', 'clit', 'clits', 'cunt', 'cunts', 'cock', 
     'chink', 'cocks', 'dick', 'dickhead', 'fuck', 'fucks',
     'fucked', 'fucker', 'fuckers', 'fucking', 'goddamn', 
     'horny', 'lusting', 'masochist', 'motherfucker',
-    'motherfucking', 'pharmacy', 'porn', 'rape', 'raped',
-    'retard', 'sadist', 'shit', 'sh!t', 'shithead',
+    'motherfucking', 'porn', 'rape', 'raped',
+    'retard', 'sadist', 'shithead',
     'shitting', 'shitty', 'slut', 'sluts', 'smut', 'whore',
-    'whores', 'xxx', 'damn', 'fag', 'fcuk', 'faggot',
+    'whores', 'xxx', 'fag', 'fcuk', 'faggot',
     'nigga', 'nigger', 'paki', 'prick', 'pussy', 'cum'];
     text = text.toLowerCase();
     censoredWords.forEach(censoredWord =>{
