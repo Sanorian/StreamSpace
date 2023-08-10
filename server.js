@@ -116,8 +116,8 @@ function isGood(text){
     'fucked', 'fucker', 'fuckers', 'fucking', 'goddamn', 
     'horny', 'lusting', 'masochist', 'motherfucker',
     'motherfucking', 'porn', 'rape', 'raped',
-    'retard', 'sadist', 'shithead',
-    'shitting', 'shitty', 'slut', 'sluts', 'smut', 'whore',
+    'retard', 'sadist', 'shithead','shitting',
+    'shitty', 'slut', 'sluts', 'smut', 'whore',
     'whores', 'xxx', 'fag', 'fcuk', 'faggot',
     'nigga', 'nigger', 'paki', 'prick', 'pussy', 'cum'];
     text = text.toLowerCase();
