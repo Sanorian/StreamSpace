@@ -11,7 +11,7 @@ app.post('/send_data', (req, res)=>{
     category = req.body.category;
     postText =req.body.posttext;
     res.header('Access-Control-Allow-Origin', '*');
-    if (isGood(postName) && isGood(postText)){
+    if (isGood(postName) && isGood(postText) && postName!='' && postText!=''){
         // Открытие базы
         console.log('Post is good')
         let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
@@ -94,7 +94,7 @@ app.get('/new_post', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');
     res.sendFile(__dirname + '/new_post.html');
 });
-app.get('/post-app', function(req, res) {
+app.get('/post_app', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');
     res.sendFile(__dirname + '/post_app.js');
 });
@@ -102,7 +102,8 @@ app.get('/rules', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');
     res.sendFile(__dirname + '/rules.html');
 });
-  
+
+
 port=8080;
 app.listen(port, () => {
     console.log(`Server running on port${port}`);
