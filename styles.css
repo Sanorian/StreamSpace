@@ -53,6 +53,10 @@ textarea{
     font-family: 'Nunito', sans-serif;
     font-family: 'Poppins', sans-serif;
 }
+.dark{
+    background-color: #526D82;
+    color: #DDE6ED;
+}
 input{
     border-radius: 2vmin;
     height: 3vmin;
@@ -111,4 +115,7 @@ p{
     width: 70%;
     margin-left: 15%;
     margin-right: 15%;
+}
+.li_dark{
+    color: #DDE6ED;
 }

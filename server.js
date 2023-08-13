@@ -85,7 +85,6 @@ app.get('/styles', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');
     res.sendFile(__dirname + '/styles.css');
 });
-  
 app.get('/app', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');
     res.sendFile(__dirname + '/app.js');
@@ -93,6 +92,10 @@ app.get('/app', function(req, res) {
 app.get('/new_post', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');
     res.sendFile(__dirname + '/new_post.html');
+});
+app.get('/rules_app', function(req, res) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.sendFile(__dirname + '/rules_app.js');
 });
 app.get('/post_app', function(req, res) {
     res.header('Access-Control-Allow-Origin', '*');

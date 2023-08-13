@@ -1,11 +1,6 @@
 window.onload = function(){
     let changeThemeButton = document.getElementById('changeTheme'),
-        textarea = document.getElementById('textarea'),
-        input = document.getElementById('input'),
-        select = document.getElementById('select'),
-        theme = (localStorage.getItem('theme') ?? 'light');
-    input.value= (localStorage.getItem('input') ?? '');
-    textarea.value= (localStorage.getItem('textarea') ?? '');
+    theme = (localStorage.getItem('theme') ?? 'light');
     if (theme == 'dark'){
         changeThemeButton.innerHTML='to Light theme';
         document.getElementsByTagName('body')[0].classList.remove('body_light');
@@ -16,19 +11,9 @@ window.onload = function(){
             element.classList.remove('button_light');
             element.classList.add('button_dark');
         });
-        textarea.classList.add('dark');
-        input.classList.add('dark');
-        select.classList.add('dark');
-    }
-
-    input.oninput = function(){
-        localStorage.setItem('input', input.value);
-    }
-    select.onchange = function(){
-        localStorage.setItem('select', select.value);
-    }
-    textarea.oninput = function(){
-        localStorage.setItem('textarea', textarea.value);
+        document.getElementsByTagName('h2')[0].classList.add('li_dark');
+        document.getElementsByTagName('li')[0].classList.add('li_dark');
+        document.getElementsByTagName('li')[1].classList.add('li_dark');
     }
     changeThemeButton.onclick = function(){
         if (changeThemeButton.classList[0]=='button_light'){
@@ -41,9 +26,9 @@ window.onload = function(){
                 element.classList.remove('button_light');
                 element.classList.add('button_dark');
             });
-            textarea.classList.add('dark');
-            input.classList.add('dark');
-            select.classList.add('dark');
+            document.getElementsByTagName('h2')[0].classList.add('li_dark');
+            document.getElementsByTagName('li')[0].classList.add('li_dark');
+            document.getElementsByTagName('li')[1].classList.add('li_dark');
             localStorage.setItem('theme', 'dark');
         } else {
             changeThemeButton.innerHTML='to Dark theme';
@@ -55,14 +40,10 @@ window.onload = function(){
                 element.classList.remove('button_dark');
                 element.classList.add('button_light');
             });
-            textarea.classList.remove('dark');
-            input.classList.remove('dark');
-            select.classList.remove('dark');
+            document.getElementsByTagName('h2')[0].classList.remove('li_dark');
+            document.getElementsByTagName('li')[0].classList.remove('li_dark');
+            document.getElementsByTagName('li')[1].classList.remove('li_dark');
             localStorage.setItem('theme', 'light');
         }
     }
-}
-function clearing(){
-    localStorage.setItem('input', '');
-    localStorage.setItem('textarea', '');
 }
