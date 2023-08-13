@@ -37,6 +37,7 @@ app.post('/send_data', (req, res)=>{
     } else {
         console.log('Post isn`t good');
     }
+    res.sendFile(__dirname + '/new_post.html');
 });
 
 app.get('/', function (req, res) {
@@ -53,7 +54,7 @@ app.get('/', function (req, res) {
             }
             let allposts = '';
             for (let len=rows.length-1; len>=0;len--){
-                allposts+='<div class="post"><h3>'+ rows[len].postname +'</h3><p class="text" style="white-space: pre-line">'+rows[len].posttext +'</p></div>'
+                allposts+='<div class="post_light"><h3>'+ rows[len].postname +'</h3><p class="text" style="white-space: pre-line">'+rows[len].posttext +'</p></div>'
             }
             fs.readFile('index.html', 'utf8', (err, data) => {
               if (err) throw err;
@@ -105,20 +106,21 @@ app.get('/rules', function(req, res) {
 port=8080;
 app.listen(port, () => {
     console.log(`Server running on port${port}`);
+    console.log('http://localhost:8080');
   });
 
 function isGood(text){
     let badWords = 0;
     let censoredWords = ['asshole',
-    'bastard', 'bestial', 'bitch', 'boobs','boob',
-    'bullshit', 'clit', 'clits', 'cunt', 'cunts', 'cock', 
+    'bestial', 'bitch', 'boobs','boob',
+    'clit', 'clits', 'cunt', 'cunts', 'cock',
     'chink', 'cocks', 'dick', 'dickhead', 'fuck', 'fucks',
-    'fucked', 'fucker', 'fuckers', 'fucking', 'goddamn', 
-    'horny', 'lusting', 'masochist', 'motherfucker',
-    'motherfucking', 'porn', 'rape', 'raped',
-    'retard', 'sadist', 'shithead','shitting',
-    'shitty', 'slut', 'sluts', 'smut', 'whore',
-    'whores', 'xxx', 'fag', 'fcuk', 'faggot',
+    'fucked', 'fucker', 'fuckers', 'fucking', 'horny',
+    'lusting', 'motherfucker', 'motherfucking',
+    'porn', 'rape', 'raped',
+    'retard', 'sadist', 'shithead', 'slut', 
+    'sluts', 'smut', 'whore', 'whores',
+    'xxx', 'fag', 'faggot',
     'nigga', 'nigger', 'paki', 'prick', 'pussy', 'cum'];
     text = text.toLowerCase();
     censoredWords.forEach(censoredWord =>{

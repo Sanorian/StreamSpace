@@ -3,21 +3,33 @@ header{
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    background-color: #8EA7E9;
     padding-top: 2vmin;
     padding-bottom: 2vmin;
 }
-.two-buttons{
+.header_light{
+    background-color: #8EA7E9;
+}
+.header_dark{
+    background-color: #ACB1D6;
+}
+.two_buttons{
     display: flex;
     flex-direction: row;
 }
 button{
     border-radius: 2vmin;
     padding: 1vmin;
-    background-color: #7286D3;
+    margin: 0.3vmin;
     font-family: 'Nunito', sans-serif;
     font-family: 'Poppins', sans-serif;
     transition: background-color .25s ease;
+}
+.button_light{
+    background-color: #7286D3;
+}
+.button_dark{
+    background-color: #4A55A2;
+    color: #DDE6ED;
 }
 button:hover{
     background-color: #5879ff;
@@ -53,9 +65,14 @@ select{
     border-radius: 2vmin;
 }
 body{
-    background-color: #FFF2F2;
     font-family: 'Nunito', sans-serif;
     font-family: 'Poppins', sans-serif;
+}
+.body_light{
+    background-color: #FFF2F2;
+}
+.body_dark{
+    background-color: #27374D;
 }
 main{
     width: 80vw;
@@ -66,12 +83,20 @@ main{
     flex-direction: column;
     align-items: center;
 }
-.post{
+.post_light{
     width:60vmin;
     padding: 3vmin;
     background-color: rgb(236, 235, 243);
     border-radius: 3vmin;
     margin: 1vmin;
+}
+.post_dark{
+    width:60vmin;
+    padding: 3vmin;
+    background-color: #526D82;
+    border-radius: 3vmin;
+    margin: 1vmin;
+    color: #DDE6ED;
 }
 p{
     word-wrap: break-word;
