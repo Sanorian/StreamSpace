@@ -1,48 +1,11 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const fs = require('fs');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
 
-app.use(bodyParser.urlencoded({ extended: true })); 
 
-app.post('/send_data', (req, res)=>{
-    postName = req.body.postname;
-    category = req.body.category;
-    postText =req.body.posttext;
-    res.header('Access-Control-Allow-Origin', '*');
-    if (isGood(postName) && isGood(postText) && postName!='' && postText!=''){
-        // Открытие базы
-        console.log('Post is good')
-        let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
-        if (err) {
-            console.error(err.message);
-        }
-        });
-        // Главный запрос
-        db.run(`INSERT INTO main(postname, category, posttext) VALUES(?, ?, ?)`, [postName, category, postText], function(err) {
-        if (err) {
-            return console.log(err.message);
-        }
-        // get the last insert id
-        console.log('Post sended');
-        });
-        // Закрытие базы
-        db.close((err) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        });
-        
-    } else {
-        console.log('Post isn`t good');
-    }
-    res.sendFile(__dirname + '/new_post.html');
-});
-
-app.get('/', function (req, res) {
-    res.header('Access-Control-Allow-Origin', '*');
-    let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
+app.get('/', (req, res)=>{
+  res.header('Access-Control-Allow-Origin', '*');
+  let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
         if (err) {
             reject(err.message);
         }
@@ -52,26 +15,7 @@ app.get('/', function (req, res) {
             if (err) {
               console.log(err);
             }
-            let allposts = '';
-            for (let len=rows.length-1; len>=0;len--){
-                allposts+='<div class="post_light"><h3>'+ rows[len].postname +'</h3><p class="text" style="white-space: pre-line">'+rows[len].posttext +'</p></div>'
-            }
-            fs.readFile('index.html', 'utf8', (err, data) => {
-              if (err) throw err;
-            
-              // Modify the HTML
-              let pageArray = [];
-              pageArray.push(data.split('<main>')[0]+'<main>');
-              pageArray.push('</main></body></html>');
-              const modifiedData = pageArray[0]+ allposts +pageArray[1];
-            
-              // Write the modified HTML back to the file
-              fs.writeFile('index.html', modifiedData, 'utf8', (err) => {
-                if (err) throw err;
-                res.sendFile(__dirname+'/index.html');
-              });
-            });
-  
+            res.send(rows);
       });
       // closing db
       db.close( (err) => {
@@ -79,57 +23,39 @@ app.get('/', function (req, res) {
             reject(err.message);
         }
       });
-      console.log('Uploading main page');
 });
-app.get('/styles', function(req, res) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.sendFile(__dirname + '/styles.css');
-});
-app.get('/app', function(req, res) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.sendFile(__dirname + '/app.js');
-});
-app.get('/new_post', function(req, res) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.sendFile(__dirname + '/new_post.html');
-});
-app.get('/rules_app', function(req, res) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.sendFile(__dirname + '/rules_app.js');
-});
-app.get('/post_app', function(req, res) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.sendFile(__dirname + '/post_app.js');
-});
-app.get('/rules', function(req, res) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.sendFile(__dirname + '/rules.html');
-});
-
-
-port=8080;
-app.listen(port, () => {
-    console.log(`Server running on port${port}`);
-    console.log('http://localhost:8080');
+app.get('/sendpost', (req, res)=>{
+  res.header('Access-Control-Allow-Origin', '*');
+  let name = req.query.postname;
+  let category = req.query.postcategory;
+  let text = req.query.posttext;
+  let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
+    if (err) {
+        reject(err.message);
+    }
+  });
+  db.all('SELECT * FROM main', (err, rows) => {
+    if (err) {
+      console.log(err);
+    }
+    newId = Number(rows[rows.length-1].id)+1;
+    db.run(`INSERT INTO main(id, postname, category, posttext) VALUES(?, ?, ?, ?)`, [newId, name, category, text], function(err) {
+      if (err) {
+          return console.log(err.message);
+          res.send('bad');
+      }
+      res.send('good');
+    });
   });
 
-function isGood(text){
-    let badWords = 0;
-    let censoredWords = ['asshole',
-    'bestial', 'bitch', 'boobs','boob',
-    'clit', 'clits', 'cunt', 'cunts', 'cock',
-    'chink', 'cocks', 'dick', 'dickhead', 'fuck', 'fucks',
-    'fucked', 'fucker', 'fuckers', 'fucking', 'horny',
-    'lusting', 'motherfucker', 'motherfucking',
-    'porn', 'rape', 'raped',
-    'retard', 'sadist', 'shithead', 'slut', 
-    'sluts', 'smut', 'whore', 'whores',
-    'xxx', 'fag', 'faggot',
-    'nigga', 'nigger', 'paki', 'prick', 'pussy', 'cum'];
-    text = text.toLowerCase();
-    censoredWords.forEach(censoredWord =>{
-        if (text.indexOf(censoredWord)!=-1){badWords+=1;}
-        });
-    if (badWords!=0){return false;}
-    else {return true;}
-}
+  db.close( (err) => {
+    if (err) {
+        reject(err.message);
+    }
+  });
+});
+port=3000;
+app.listen(port, () => {
+    console.log(`Server running on port${port}`);
+    console.log('http://localhost:3000');
+  });
