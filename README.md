@@ -1,24 +1,18 @@
 # streamspace
 
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
+## Type in first terminal
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### Type in second terminal
 ```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
+node server.js
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Dependencies
+```
+npm i sqlite3
+npm i express
+```
+
