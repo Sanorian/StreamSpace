@@ -15,6 +15,11 @@ fetch('http://localhost:3000/')
     console.log(error);
   });
 
+function toBlogPage(){
+  isBlog.value = true;
+    isAddPost.value = false;
+    addPostButtonValue.value = 'Create a new post';
+}
 function addPostWindow(){
   if (isBlog.value == true){
     isBlog.value = false;
@@ -84,7 +89,7 @@ function isGood(text){
 
 <template>
   <header>
-      <img src="">
+      <img src="./assets/logo.png" @click="toBlogPage()">
       <div class="two_buttons">
           <button class="button_light">Category</button>
           <button class="button_light" @click="addPostWindow()">{{addPostButtonValue}}</button>
@@ -137,6 +142,10 @@ function isGood(text){
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito&family=Poppins:wght@300&display=swap');
+img{
+  height: 8vmin;
+  width: auto;
+}
 header{
     display: flex;
     flex-direction: row;
