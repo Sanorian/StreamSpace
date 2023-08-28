@@ -10,14 +10,12 @@ app.get('/', (req, res)=>{
             reject(err.message);
         }
       });
-      //main request
       db.all('SELECT * FROM main', (err, rows) => {
             if (err) {
               console.log(err);
             }
             res.send(rows);
       });
-      // closing db
       db.close( (err) => {
         if (err) {
             reject(err.message);
@@ -41,8 +39,8 @@ app.get('/sendpost', (req, res)=>{
     newId = Number(rows[rows.length-1].id)+1;
     db.run(`INSERT INTO main(id, postname, category, posttext) VALUES(?, ?, ?, ?)`, [newId, name, category, text], function(err) {
       if (err) {
-          return console.log(err.message);
-          res.send('bad');
+        res.send('bad');
+        return console.log(err.message);
       }
       res.send('good');
     });
@@ -53,6 +51,40 @@ app.get('/sendpost', (req, res)=>{
         reject(err.message);
     }
   });
+});
+app.get('/login', (req, res)=>{
+  res.header('Access-Control-Allow-Origin', '*');
+  const username = req.query.username;
+  const password = req.query.password;
+  if (username=='admin' && password=='12345678'){
+    res.send({res:'good'});
+  } else {
+    res.send({res:'bad'});
+  }
+});
+app.get('/deletepost', (req, res)=>{
+  res.header('Access-Control-Allow-Origin', '*');
+  const password = req.query.password;
+  const id = req.query.id;
+  if (password=='12345678'){
+    let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
+      if (err) {
+          reject(err.message);
+      }
+    });
+    db.run(`DELETE FROM main WHERE id=?`, [id], function(err) {
+      if (err) {
+        res.send({res:'bad'});
+        return console.log(err.message);
+      }
+      res.send({res:'good'});
+    });
+    db.close( (err) => {
+      if (err) {
+          reject(err.message);
+      }
+    });
+  }
 });
 port=3000;
 app.listen(port, () => {
