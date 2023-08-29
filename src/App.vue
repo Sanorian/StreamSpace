@@ -2,7 +2,10 @@
 import {ref} from 'vue'
 const isBlog = ref(true);
 const isAddPost = ref(false);
+const isCategoryChoosing = ref(false);
+const isCategoryChosen = ref(false);
 const blogData = ref([{postname: 'No server response', posttext: 'Try this again later'}]);
+const chosenCategoryData = ref([{postname: 'No server response', posttext: 'Try this again later'}]);
 const addPostButtonValue = ref('Create a new post');
 const response = ref();
 
@@ -17,19 +20,42 @@ fetch('http://localhost:3000/')
 
 function toBlogPage(){
   isBlog.value = true;
-    isAddPost.value = false;
-    addPostButtonValue.value = 'Create a new post';
+  isAddPost.value = false;
+  isCategoryChoosing.value = false;
+  isCategoryChosen.value = false;
+  addPostButtonValue.value = 'Create a new post';
 }
+
 function addPostWindow(){
   if (isBlog.value == true){
     isBlog.value = false;
+    isCategoryChoosing.value = false;
+    isCategoryChosen.value = false;
     isAddPost.value = true;
-    addPostButtonValue.value = 'Return to main page';
+    addPostButtonValue.value = 'Return to blog page';
   } else {
     isBlog.value = true;
+    isCategoryChoosing.value = false;
+    isCategoryChosen.value = false;
     isAddPost.value = false;
     addPostButtonValue.value = 'Create a new post';
   }
+}
+
+function toCategorys(){
+  isBlog.value = false;
+  isAddPost.value = false;
+  addPostButtonValue.value = 'Return to blog page';
+  isCategoryChoosing.value = true;
+  isCategoryChosen.value = false;
+}
+
+function toCategory(category){
+  chosenCategoryData.value = blogData.value.filter((post)=> post.category==category)
+  isBlog.value = false;
+  isAddPost.value = false;
+  isCategoryChoosing.value = false;
+  isCategoryChosen.value = true;
 }
 function sendingPost(){
   let name = document.getElementsByTagName('input')[0].value,
@@ -54,7 +80,6 @@ function sendingPost(){
   } else {
     response.value = 'The post has not passed moderation';
   }
-
 }
 function onInput(key){
   if (key=='input'){
@@ -91,17 +116,17 @@ function isGood(text){
   <header>
       <img src="./assets/logo.png" @click="toBlogPage()">
       <div class="two_buttons">
-          <button class="button_light">Category</button>
+          <button class="button_light" @click="toCategorys()">Category</button>
           <button class="button_light" @click="addPostWindow()">{{addPostButtonValue}}</button>
       </div>
   </header>
   <div v-if="isBlog" class="blog">
     <div v-for="post in blogData" :key="post.id">
-    <div class="post_light">
-      <h3>{{post.postname}}</h3>
-      <p class="text" style="white-space: pre-line">{{post.posttext}}</p>
+      <div class="post_light">
+        <h3>{{post.postname}}</h3>
+        <p class="text" style="white-space: pre-line">{{post.posttext}}</p>
+      </div>
     </div>
-  </div>
   </div>
   <div v-if="isAddPost">
     <div class="post_enter">
@@ -138,6 +163,23 @@ function isGood(text){
       </ol>
     </div>
   </div>
+  <div v-if="isCategoryChoosing" class="categoryChoosing">
+    <button @click="toCategory('backend')">Backend</button>
+    <button @click="toCategory('frontend')">Frontend</button>
+    <button @click="toCategory('devops')">DevOps</button>
+    <button @click="toCategory('ui/ux')">UI/UX</button>
+    <button @click="toCategory('cooking')">Cooking</button>
+    <button @click="toCategory('learning')">Learning</button>
+  </div>
+  <div v-if="isCategoryChosen" class="blog">
+    <div v-for="post in [...new Set(chosenCategoryData)]" :key="post.id">
+      <div class="post_light">
+        <h3>{{post.postname}}</h3>
+        <p class="text" style="white-space: pre-line">{{post.posttext}}</p>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <style>
@@ -250,5 +292,15 @@ p{
 }
 template{
   background-color: #FFF2F2;
+}
+.categoryChoosing{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.categoryChoosing button{
+  margin-top: 1vmin;
+  font-size: 4vmin;
 }
 </style>

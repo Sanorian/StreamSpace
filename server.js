@@ -86,6 +86,26 @@ app.get('/deletepost', (req, res)=>{
     });
   }
 });
+app.get('/category', (req, res)=>{
+  res.header('Access-Control-Allow-Origin', '*');
+  const category = req.query.category;
+  let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
+    if (err) {
+        reject(err.message);
+    }
+  });
+  db.all('SELECT * FROM main WHERE category=?', [category], (err, rows) => {
+        if (err) {
+          console.log(err);
+        }
+        res.send(rows);
+  });
+  db.close( (err) => {
+    if (err) {
+        reject(err.message);
+    }
+  });
+})
 port=3000;
 app.listen(port, () => {
     console.log(`Server running on port${port}`);
