@@ -172,7 +172,7 @@ function isGood(text){
     <button @click="toCategory('learning')">Learning</button>
   </div>
   <div v-if="isCategoryChosen" class="blog">
-    <div v-for="post in [...new Set(chosenCategoryData)]" :key="post.id">
+    <div v-for="post in chosenCategoryData" :key="post.id">
       <div class="post_light">
         <h3>{{post.postname}}</h3>
         <p class="text" style="white-space: pre-line">{{post.posttext}}</p>
