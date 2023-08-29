@@ -9,7 +9,7 @@ const chosenCategoryData = ref([{postname: 'No server response', posttext: 'Try 
 const addPostButtonValue = ref('Create a new post');
 const response = ref();
 
-fetch('http://localhost:3000/')
+fetch('http://192.168.31.209:3000/')
   .then(response => response.json())
   .then(data => {
     blogData.value = data;
@@ -64,7 +64,7 @@ function sendingPost(){
   if (name == '' || text == ''){
     response.value = 'The title and body of the post should not be empty';
   } else if (isGood(name) && isGood(text)){
-    fetch('http://localhost:3000/sendpost?postname='+name+'&postcategory='+
+    fetch('http://192.168.31.209:3000/sendpost?postname='+name+'&postcategory='+
    category+'&posttext='+ text)
   .then(response => response.json())
   .then(data => {
@@ -228,7 +228,7 @@ button:hover{
 textarea{
     padding: 1vmin;
     height: 35vh;
-    width: 50vh;
+    width: 40vh;
     resize: none;
     border-radius: 2vmin;
     margin-bottom: 2vmin;
