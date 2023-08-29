@@ -39,10 +39,10 @@ app.get('/sendpost', (req, res)=>{
     newId = Number(rows[rows.length-1].id)+1;
     db.run(`INSERT INTO main(id, postname, category, posttext) VALUES(?, ?, ?, ?)`, [newId, name, category, text], function(err) {
       if (err) {
-        res.send('bad');
+        res.send({res:'bad'});
         return console.log(err.message);
       }
-      res.send('good');
+      res.send({res:'good'});
     });
   });
 

@@ -58,9 +58,9 @@ function toCategory(category){
   isCategoryChosen.value = true;
 }
 function sendingPost(){
-  let name = document.getElementsByTagName('input')[0].value,
+  let name = document.getElementsByTagName('input')[0].value.replaceAll('\n', 'EnTeR'),
       category = document.getElementsByTagName('select')[0].value,
-      text = document.getElementsByTagName('textarea')[0].value;
+      text = document.getElementsByTagName('textarea')[0].value.replaceAll('\n', 'EnTeR');
   if (name == '' || text == ''){
     response.value = 'The title and body of the post should not be empty';
   } else if (isGood(name) && isGood(text)){
@@ -68,7 +68,7 @@ function sendingPost(){
    category+'&posttext='+ text)
   .then(response => response.json())
   .then(data => {
-    if (data=='bad'){
+    if (data.res=='bad'){
       response.value = 'Something went wrong. Try later'
     }
     })
@@ -123,8 +123,8 @@ function isGood(text){
   <div v-if="isBlog" class="blog">
     <div v-for="post in blogData" :key="post.id">
       <div class="post_light">
-        <h3>{{post.postname}}</h3>
-        <p class="text" style="white-space: pre-line">{{post.posttext}}</p>
+        <h3>{{post.postname.replaceAll('EnTeR', '\n')}}</h3>
+        <p class="text" style="white-space: pre-line">{{post.posttext.replaceAll('EnTeR', '\n')}}</p>
       </div>
     </div>
   </div>
@@ -228,7 +228,7 @@ button:hover{
 textarea{
     padding: 1vmin;
     height: 35vh;
-    width: 40vh;
+    width: 50vh;
     resize: none;
     border-radius: 2vmin;
     margin-bottom: 2vmin;
