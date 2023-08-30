@@ -58,9 +58,9 @@ function toCategory(category){
   isCategoryChosen.value = true;
 }
 function sendingPost(){
-  let name = document.getElementsByTagName('input')[0].value.replaceAll('\n', 'EnTeR'),
+  let name = document.getElementsByTagName('input')[0].value.replaceAll('\n', '%0A'),
       category = document.getElementsByTagName('select')[0].value,
-      text = document.getElementsByTagName('textarea')[0].value.replaceAll('\n', 'EnTeR');
+      text = document.getElementsByTagName('textarea')[0].value.replaceAll('\n', '%0A');
   if (name == '' || text == ''){
     response.value = 'The title and body of the post should not be empty';
   } else if (isGood(name) && isGood(text)){
@@ -123,8 +123,8 @@ function isGood(text){
   <div v-if="isBlog" class="blog">
     <div v-for="post in blogData" :key="post.id">
       <div class="post_light">
-        <h3>{{post.postname.replaceAll('EnTeR', '\n')}}</h3>
-        <p class="text" style="white-space: pre-line">{{post.posttext.replaceAll('EnTeR', '\n')}}</p>
+        <h3>{{post.postname}}</h3>
+        <p class="text" style="white-space: pre-line">{{post.posttext}}</p>
       </div>
     </div>
   </div>
