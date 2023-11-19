@@ -1,13 +1,13 @@
 # streamspace
 
+## For hosting replace all localhost with the server address
 ## Type in first terminal
 ```
-npm run serve
+npm run serve & node server.js
 ```
-
-### Type in second terminal
+## If doesn't work:
 ```
-node server.js
+rm -r node_modules
 ```
 
 ### Dependencies
