@@ -5,10 +5,6 @@
 ```
 npm run serve & node server.js
 ```
-## If doesn't work:
-```
-rm -r node_modules
-```
 
 ### Dependencies
 ```
