@@ -2,112 +2,101 @@ const express = require('express');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
 
-
-app.get('/', (req, res)=>{
+app.post('/', (req, res)=>{
   res.header('Access-Control-Allow-Origin', '*');
   let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
-        if (err) {
-            reject(err.message);
-        }
+        if (err) reject(err.message);
       });
       db.all('SELECT * FROM main', (err, rows) => {
-            if (err) {
-              console.log(err);
-            }
+            if (err) console.log(err);
             res.send(rows);
       });
       db.close( (err) => {
-        if (err) {
-            reject(err.message);
-        }
+        if (err) reject(err.message);
       });
 });
-app.get('/sendpost', (req, res)=>{
+
+app.put('/sendpost', (req, res)=>{
   res.header('Access-Control-Allow-Origin', '*');
-  let name = req.query.postname;
-  let category = req.query.postcategory;
-  let text = req.query.posttext;
+  let name = req.body.postname;
+  let category = req.body.postcategory;
+  let text = req.body.posttext;
+  
   let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
-    if (err) {
-        reject(err.message);
-    }
+    if (err) reject(err.message);
   });
-  db.all('SELECT * FROM main', (err, rows) => {
+
+  db.run(`INSERT INTO main(postname, category, posttext) VALUES(?, ?, ?, ?)`, [name, category, text], function(err) {
     if (err) {
-      console.log(err);
+      res.send({res:'bad'});
+      console.log(err.message);
     }
-    newId = Number(rows[rows.length-1].id)+1;
-    db.run(`INSERT INTO main(id, postname, category, posttext) VALUES(?, ?, ?, ?)`, [newId, name, category, text], function(err) {
-      if (err) {
-        res.send({res:'bad'});
-        return console.log(err.message);
-      }
-      res.send({res:'good'});
-    });
+    res.send({res:'good'});
   });
 
   db.close( (err) => {
-    if (err) {
-        reject(err.message);
-    }
+    if (err) reject(err.message);
   });
 });
-app.get('/login', (req, res)=>{
+
+app.post('/category', (req, res)=>{
   res.header('Access-Control-Allow-Origin', '*');
-  const username = req.query.username;
-  const password = req.query.password;
-  if (username=='admin' && password=='12345678'){
-    res.send({res:'good'});
-  } else {
-    res.send({res:'bad'});
-  }
-});
-app.get('/deletepost', (req, res)=>{
-  res.header('Access-Control-Allow-Origin', '*');
-  const password = req.query.password;
-  const id = req.query.id;
-  if (password=='12345678'){
-    let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
-      if (err) {
-          reject(err.message);
-      }
-    });
-    db.run(`DELETE FROM main WHERE id=?`, [id], function(err) {
-      if (err) {
-        res.send({res:'bad'});
-        return console.log(err.message);
-      }
-      res.send({res:'good'});
-    });
-    db.close( (err) => {
-      if (err) {
-          reject(err.message);
-      }
-    });
-  }
-});
-app.get('/category', (req, res)=>{
-  res.header('Access-Control-Allow-Origin', '*');
-  const category = req.query.category;
+  const category = req.body.category;
   let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
-    if (err) {
-        reject(err.message);
-    }
+    if (err) reject(err.message);
   });
   db.all('SELECT * FROM main WHERE category=?', [category], (err, rows) => {
-        if (err) {
-          console.log(err);
-        }
+        if (err) reject(err.message);
         res.send(rows);
   });
   db.close( (err) => {
-    if (err) {
-        reject(err.message);
-    }
+    if (err) reject(err.message);
   });
 })
+
+app.post("/login", (req, res)=>{
+  const username = req.body.username;
+  const password  = req.body.password;
+
+  res.header('Access-Control-Allow-Origin', '*');
+
+  let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
+    if (err) reject(err.message);
+  });
+  db.all('SELECT * FROM users WHERE username=? AND password=? ', [username, password], (err, rows) => {
+        if (err) reject(err.message);
+        if (rows.length==1) res.send({res: "good"})
+  });
+  db.close( (err) => {
+    if (err) reject(err.message);
+  });
+})
+
+app.put("/registration", (req, res)=>{
+  const username = req.body.username;
+  const password  = req.body.password;
+
+  res.header('Access-Control-Allow-Origin', '*');
+
+  let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
+    if (err) reject(err.message);
+  });
+  db.run('ISERT INTO users (username, password) VALUES (?, ?)', [username, password], function (err) {
+    if (err) {
+      res.send({res:'bad'});
+      console.log(err.message);
+    }
+    res.send({res: "good"})
+  });
+  db.close( (err) => {
+    if (err) reject(err.message);
+  });
+})
+
+
+
 port=3000;
 app.listen(port, () => {
     console.log(`Server running on port${port}`);
     console.log('http://localhost:3000');
-  });
+});
