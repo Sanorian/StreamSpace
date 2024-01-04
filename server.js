@@ -2,12 +2,12 @@ const express = require('express');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
 
-app.post('/', (req, res)=>{
+app.get('/', (req, res)=>{
   res.header('Access-Control-Allow-Origin', '*');
   let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
         if (err) reject(err.message);
       });
-      db.all('SELECT * FROM main', (err, rows) => {
+      db.all('SELECT * FROM posts', (err, rows) => {
             if (err) console.log(err);
             res.send(rows);
       });
@@ -26,7 +26,7 @@ app.put('/sendpost', (req, res)=>{
     if (err) reject(err.message);
   });
 
-  db.run(`INSERT INTO main(postname, category, posttext) VALUES(?, ?, ?, ?)`, [name, category, text], function(err) {
+  db.run(`INSERT INTO posts (postname, category, posttext, userid) VALUES(?, ?, ?, (SELECT id FROM users WHERE username=?))`, [name, category, text, username], function(err) {
     if (err) {
       res.send({res:'bad'});
       console.log(err.message);
@@ -39,13 +39,13 @@ app.put('/sendpost', (req, res)=>{
   });
 });
 
-app.post('/category', (req, res)=>{
+app.get('/category', (req, res)=>{
   res.header('Access-Control-Allow-Origin', '*');
   const category = req.body.category;
   let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
     if (err) reject(err.message);
   });
-  db.all('SELECT * FROM main WHERE category=?', [category], (err, rows) => {
+  db.all('SELECT * FROM posts WHERE category=?', [category], (err, rows) => {
         if (err) reject(err.message);
         res.send(rows);
   });
@@ -57,7 +57,6 @@ app.post('/category', (req, res)=>{
 app.post("/login", (req, res)=>{
   const username = req.body.username;
   const password  = req.body.password;
-
   res.header('Access-Control-Allow-Origin', '*');
 
   let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
@@ -65,7 +64,8 @@ app.post("/login", (req, res)=>{
   });
   db.all('SELECT * FROM users WHERE username=? AND password=? ', [username, password], (err, rows) => {
         if (err) reject(err.message);
-        if (rows.length==1) res.send({res: "good"})
+        if (rows.length==1) res.send({res: "good", reason: "good"})
+        if (rows.length==0) res.send({res: "bad", reason: "no"})
   });
   db.close( (err) => {
     if (err) reject(err.message);
@@ -92,8 +92,6 @@ app.put("/registration", (req, res)=>{
     if (err) reject(err.message);
   });
 })
-
-
 
 port=3000;
 app.listen(port, () => {

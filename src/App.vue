@@ -1,13 +1,17 @@
 <script setup>
-import {ref} from 'vue'
+import {ref} from 'vue';
+import loginRegistration from './assets/login_registration.vue';
+import createPost from './assets/createPost.vue';
+
 const isBlog = ref(true);
 const isAddPost = ref(false);
 const isCategoryChoosing = ref(false);
 const isCategoryChosen = ref(false);
+const isLogReg = ref(false);
+
 const blogData = ref([{postname: 'No server response', posttext: 'Try this again later'}]);
 const chosenCategoryData = ref([{postname: 'No server response', posttext: 'Try this again later'}]);
 const addPostButtonValue = ref('Create a new post');
-const response = ref();
 
 fetch('http://localhost:3000/')
   .then(response => response.json())
@@ -23,6 +27,7 @@ function toBlogPage(){
   isAddPost.value = false;
   isCategoryChoosing.value = false;
   isCategoryChosen.value = false;
+  isLogReg.value = false;
   addPostButtonValue.value = 'Create a new post';
 }
 
@@ -32,12 +37,14 @@ function addPostWindow(){
     isCategoryChoosing.value = false;
     isCategoryChosen.value = false;
     isAddPost.value = true;
+    isLogReg.value = false;
     addPostButtonValue.value = 'Return to blog page';
   } else {
     isBlog.value = true;
     isCategoryChoosing.value = false;
     isCategoryChosen.value = false;
     isAddPost.value = false;
+    isLogReg.value = false;
     addPostButtonValue.value = 'Create a new post';
   }
 }
@@ -45,6 +52,7 @@ function addPostWindow(){
 function toCategorys(){
   isBlog.value = false;
   isAddPost.value = false;
+  isLogReg.value = false;
   addPostButtonValue.value = 'Return to blog page';
   isCategoryChoosing.value = true;
   isCategoryChosen.value = false;
@@ -54,62 +62,20 @@ function toCategory(category){
   chosenCategoryData.value = blogData.value.filter((post)=> post.category==category)
   isBlog.value = false;
   isAddPost.value = false;
+  isLogReg.value = false;
   isCategoryChoosing.value = false;
   isCategoryChosen.value = true;
 }
-function sendingPost(){
-  let name = document.getElementsByTagName('input')[0].value.replaceAll('\n', '%0A'),
-      category = document.getElementsByTagName('select')[0].value,
-      text = document.getElementsByTagName('textarea')[0].value.replaceAll('\n', '%0A');
-  if (name == '' || text == ''){
-    response.value = 'The title and body of the post should not be empty';
-  } else if (isGood(name) && isGood(text)){
-    fetch('http://localhost:3000/sendpost?postname='+name+'&postcategory='+
-   category+'&posttext='+ text)
-  .then(response => response.json())
-  .then(data => {
-    if (data.res=='bad'){
-      response.value = 'Something went wrong. Try later'
-    }
-    })
-  .catch(error => {
-    console.log(error);
-  });
-  document.getElementsByTagName('input')[0].value = '';
-  document.getElementsByTagName('textarea')[0].value='';
-  } else {
-    response.value = 'The post has not passed moderation';
-  }
+
+function toLogIn(){
+  isBlog.value = false;
+  isAddPost.value = false;
+  isLogReg.value = true;
+  addPostButtonValue.value = 'Return to blog page';
+  isCategoryChoosing.value = false;
+  isCategoryChosen.value = false;
 }
-function onInput(key){
-  if (key=='input'){
-    localStorage.setItem(key, document.getElementsByTagName('input')[0].value)
-  } else if (key=='select') {
-    localStorage.setItem(key, document.getElementsByTagName('select')[0].value)
-  } else {
-    localStorage.setItem(key, document.getElementsByTagName('textarea')[0].value)
-  }
-}
-function isGood(text){
-    let badWords = 0;
-    let censoredWords = ['asshole',
-    'bestial', 'bitch', 'boobs','boob',
-    'clit', 'clits', 'cunt', 'cunts', 'cock',
-    'chink', 'cocks', 'dick', 'dickhead', 'fuck', 'fucks',
-    'fucked', 'fucker', 'fuckers', 'fucking', 'horny',
-    'lusting', 'motherfucker', 'motherfucking',
-    'porn', 'rape', 'raped',
-    'retard', 'sadist', 'shithead', 'slut', 
-    'sluts', 'smut', 'whore', 'whores',
-    'xxx', 'fag', 'faggot',
-    'nigga', 'nigger', 'paki', 'prick', 'pussy', 'cum'];
-    text = text.toLowerCase();
-    censoredWords.forEach(censoredWord =>{
-        if (text.indexOf(censoredWord)!=-1){badWords+=1;}
-        });
-    if (badWords!=0){return false;}
-    else {return true;}
-}
+
 </script>
 
 <template>
@@ -118,50 +84,25 @@ function isGood(text){
       <div class="two_buttons">
           <button class="button_light" @click="toCategorys()">Category</button>
           <button class="button_light" @click="addPostWindow()">{{addPostButtonValue}}</button>
+          <div v-if="isLoginned">
+            <button @click="exit()">Exit</button>
+          </div>
+          <div v-else>
+            <button @click="toLogIn()">Sign In</button>
+          </div>
       </div>
   </header>
   <div v-if="isBlog" class="blog">
     <div v-for="post in blogData" :key="post.id">
       <div class="post_light">
         <h3>{{post.postname}}</h3>
-        <p class="text" style="white-space: pre-line">{{post.posttext}}</p>
+        <p>{{post.posttext}}</p>
+        <div>{{post.username}}</div>
       </div>
     </div>
   </div>
   <div v-if="isAddPost">
-    <div class="post_enter">
-      <p style="color:red">{{response}}</p>
-      <h2>Enter title of the post:</h2>
-      <input @input="onInput('input')">
-      <h2>Choose Category:</h2>
-      <select @change="onInput('select')">
-        <option value="unchosen">Unchosen</option>
-        <option value="frontend">Frontend</option>
-        <option value="backend">Backend</option>
-        <option value="devops">DevOps</option>
-        <option value="ui/ux">UI/UX</option>
-        <option value="cooking">Cooking</option>
-        <option value="learning">Learning</option>
-      </select>
-      <h2>Enter the post itself:</h2>
-      <textarea @input="onInput('textarea')"></textarea>
-      <button @click="sendingPost()">Send</button>
-      <p>By submitting this form, you accept the rules of StreamSpace:</p>
-      <ol>
-        <li>Do not use bad words, like: You cannot use this words: a*shole,
-                    b*stard, b*stial, b*tch, b*obs, b*ob,
-                    bullsh*t, cl*t, cl*ts, c*nt, c*nts, c*ck, 
-                    ch*nk, c*cks, d*ck, d*ckhead, f*ck, f*cks,
-                    f*cked, f*cker, f*ckers, f*cking, godd*mn, 
-                    h*rny, l*sting, mas*chist, motherf*cker,
-                    motherf*cking, p*rn, r*pe, r*ped,
-                    ret*rd, s*dist, sh*thead,
-                    sh*tting, sh*tty, sl*t, sl*ts, sm*t, wh*re,
-                    wh*res, xxx, d*mn, f*g, fcuk, f*ggot,
-                    n*gga, n*gger, p*ki, pr*ck, p*ssy, c*m
-        <br>Posts with these words will not be published in the "Stream Space".</li>
-      </ol>
-    </div>
+    <createPost />
   </div>
   <div v-if="isCategoryChoosing" class="categoryChoosing">
     <button @click="toCategory('backend')">Backend</button>
@@ -179,7 +120,9 @@ function isGood(text){
       </div>
     </div>
   </div>
-
+  <div v-if="isLogReg">
+    <loginRegistration />
+  </div>
 </template>
 
 <style>
