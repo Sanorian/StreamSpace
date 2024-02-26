@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
 
-
 app.get('/', (req, res)=>{
   res.header('Access-Control-Allow-Origin', '*');
   let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
@@ -22,11 +21,12 @@ app.get('/', (req, res)=>{
         }
       });
 });
-app.get('/sendpost', (req, res)=>{
+
+app.put('/sendpost', (req, res)=>{
   res.header('Access-Control-Allow-Origin', '*');
-  let name = req.query.postname;
-  let category = req.query.postcategory;
-  let text = req.query.posttext;
+  let name = req.body.postname;
+  let category = req.body.postcategory;
+  let text = req.body.posttext;
   let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
         reject(err.message);
@@ -52,20 +52,23 @@ app.get('/sendpost', (req, res)=>{
     }
   });
 });
-app.get('/login', (req, res)=>{
+
+// Админка
+app.post('/login', (req, res)=>{
   res.header('Access-Control-Allow-Origin', '*');
-  const username = req.query.username;
-  const password = req.query.password;
+  const username = req.body.username;
+  const password = req.body.password;
   if (username=='admin' && password=='12345678'){
     res.send({res:'good'});
   } else {
     res.send({res:'bad'});
   }
 });
-app.get('/deletepost', (req, res)=>{
+
+app.delete('/deletepost', (req, res)=>{
   res.header('Access-Control-Allow-Origin', '*');
-  const password = req.query.password;
-  const id = req.query.id;
+  const password = req.body.password;
+  const id = req.body.id;
   if (password=='12345678'){
     let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
       if (err) {
@@ -86,6 +89,7 @@ app.get('/deletepost', (req, res)=>{
     });
   }
 });
+
 app.get('/category', (req, res)=>{
   res.header('Access-Control-Allow-Origin', '*');
   const category = req.query.category;
@@ -106,8 +110,10 @@ app.get('/category', (req, res)=>{
     }
   });
 })
+
 port=3000;
+
 app.listen(port, () => {
     console.log(`Server running on port${port}`);
     console.log('http://localhost:3000');
-  });
+});

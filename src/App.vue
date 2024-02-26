@@ -57,6 +57,7 @@ function toCategory(category){
   isCategoryChoosing.value = false;
   isCategoryChosen.value = true;
 }
+
 function sendingPost(){
   let name = document.getElementsByTagName('input')[0].value.replaceAll('\n', '%0A'),
       category = document.getElementsByTagName('select')[0].value,
@@ -64,17 +65,26 @@ function sendingPost(){
   if (name == '' || text == ''){
     response.value = 'The title and body of the post should not be empty';
   } else if (isGood(name) && isGood(text)){
-    fetch('http://localhost:3000/sendpost?postname='+name+'&postcategory='+
-   category+'&posttext='+ text)
-  .then(response => response.json())
-  .then(data => {
-    if (data.res=='bad'){
-      response.value = 'Something went wrong. Try later'
-    }
+    fetch("http://localhost:3000/sendpost", {
+      method: "PUT",
+      body: JSON.stringify({
+        postname: name,
+        postcategory: category,
+        posttext: text
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }
+    }).catch(err=>{
+      console.log(err);
+      response.value ="Something went wrong";
     })
-  .catch(error => {
-    console.log(error);
-  });
+    .then((response)=>response.json())
+    .then((data)=>{
+      if (data.res=='bad'){
+        response.value = 'Something went wrong. Try later'
+      }
+    })
   document.getElementsByTagName('input')[0].value = '';
   document.getElementsByTagName('textarea')[0].value='';
   } else {
@@ -90,6 +100,7 @@ function onInput(key){
     localStorage.setItem(key, document.getElementsByTagName('textarea')[0].value)
   }
 }
+
 function isGood(text){
     let badWords = 0;
     let censoredWords = ['asshole',
