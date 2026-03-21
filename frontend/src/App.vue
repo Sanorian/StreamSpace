@@ -9,7 +9,7 @@ const chosenCategoryData = ref([{postname: 'No server response', posttext: 'Try 
 const addPostButtonValue = ref('Create a new post');
 const response = ref();
 
-fetch('http://localhost:3000/')
+fetch('http://backend:3000/')
   .then(response => response.json())
   .then(data => {
     blogData.value = data;
@@ -65,7 +65,7 @@ function sendingPost(){
   if (name == '' || text == ''){
     response.value = 'The title and body of the post should not be empty';
   } else if (isGood(name) && isGood(text)){
-    fetch("http://localhost:3000/sendpost", {
+    fetch("http://backend:3000/sendpost", {
       method: "PUT",
       body: JSON.stringify({
         postname: name,

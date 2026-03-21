@@ -49,7 +49,7 @@
         function logIn(){
             let username = document.getElementById('username').value;
             let password = document.getElementById('password').value;
-            fetch("http://localhost:3000/login", {
+            fetch("http://backend:3000/login", {
                 method: "POST",
                 body: JSON.stringify({
                   username: username,

@@ -3,12 +3,12 @@
 ## For hosting replace all localhost with the server address
 ## Type in first terminal
 ```
-npm run serve & node server.js
+docker compose up
 ```
 
 ### Dependencies
 ```
-npm i sqlite3
-npm i express
+docker
+docker compose
 ```
 
