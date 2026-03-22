@@ -1,11 +1,54 @@
 services:
-    backend:
-        build: backend
-        ports:
-            - '3000:3000'
-    frontend:
-        image: nginx:alpine
-        ports:
-            - '80:80'
-        volumes:
-            - ./frontend/dist:/usr/share/nginx/html:ro
+  backend:
+    build: backend
+    ports:
+      - '3000:3000'
+
+  frontend:
+    image: nginx:alpine
+    ports:
+      - '80:80'
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro
+
+  llm_service:
+    build: llm_service
+    networks:
+      - our_network
+    depends_on:
+      ollama:
+        condition: service_started
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11435:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./init-models.sh:/init-models.sh:ro
+      - ~.ollama/models:/root/.ollama/models
+    devices:
+      - /dev/dri:/dev/dri
+    entrypoint: >
+      sh -c "ollama serve & ollama run deepseek-r1:8b"
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_VULKAN=1
+    restart: unless-stopped
+
+#  model-loader:
+#    image: curlimages/curl:latest
+#    entrypoint: >
+#      sh -c "curl -X POST http://ollama:11434/api/pull -d '{\"name\": \"deepseek-r1:latest\"}'"
+#    restart: "no"
+#    depends_on:
+#      ollama:
+#       condition: service_started
+
+volumes:
+  ollama_data:
+
+networks:
+  our_network:
