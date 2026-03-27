@@ -8,9 +8,7 @@ import markdown
 
 # news_api_url: https://newsapi.org
 
-access_token = "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"
 news_api_key = "e7ee4184d30a42338c7ea1cb1e2c9a72"
-
 
 used_titles = []
 
