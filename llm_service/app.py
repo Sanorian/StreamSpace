@@ -2,47 +2,56 @@ from random import randint
 import time
 
 import requests
+from bs4 import BeautifulSoup
+from ollama import Client
 import markdown
 
-def make_request_to_the_llm(prompt):
+# news_api_url: https://newsapi.org
 
-    response: ChatResponse = requests.post("http://localhost:11435/api/generate", json = {
-            "model": "deepseek-r1:latest",
-            "prompt": prompt
-        })
-    return response["message"]["content"]
+access_token = "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"
+news_api_key = "e7ee4184d30a42338c7ea1cb1e2c9a72"
+
+
+used_titles = []
 
 themes = ["Backend", "Frontend", "DevOps", "UI/UX", "Learning"]
 
-current_theme = themes[randint(0, len(themes)-1)]
-post_theme_request = f"""SSID={randint(10000000, 99999999)}
-Задача: Придумай одну случайную тему для статьи-поста на тему: {current_theme}.  
-
-Дополнительные параметры:  
-1. Добавь одно случайное слово из списка: [например, "автоматизация", "интеграция", "микросервисы", "безопасность", "надежность"]  
-2. Измени структуру темы: например, "Оптимизация развертываний через GitOps" → "Оптимизация развертываний через GitOps + [случайное слово]".  
-3. Выводи только полностью сформулированную тему, без комментариев, форматирования и одной цельной фразой.
-
-Тема должна быть уникальной и не повторяться при одинаковых SSID.
-После формулирования темы, переформулируй ее, чтобы она выглядела цельной и реалистичной, без плюсика
-И выведи только итоговую переформулированную тему, переведенную на английский язык
-"""
-
-post_theme_response = make_request_to_the_llm(post_theme_request)
-
-post_request = f"Ты эксперт в {current_theme}. Напиши подробный пост про {post_theme_response} на английском языке"
-
-post_response = make_request_to_the_llm(post_request)
-
-print(post_theme_response)
-print("------------------------------------------------------")
-print(markdown.markdown(post_response))
-post = {
-    "postname": post_theme_response,
-    "posttext": post_response,
-    "postcategory": current_theme
-}
+client = Client(host = 'http://ollama:11434')
 
 while True:
-    sendpost_request = requests.post("http://localhost:3000/sendpost", json = post)
-    time.sleep(3600)
+    theme= themes[randint(0, len(themes)-1)]
+    url = f"https://newsapi.org/v2/everything?q={theme}&apiKey={news_api_key}"
+
+    news = requests.get(url).json()
+    articles = news["articles"]
+    current_article = {}
+
+    while True:
+        current_article = articles[randint(0, len(articles)-1)]
+        if current_article["title"] in used_titles:
+            continue
+        break
+
+    soup = BeautifulSoup(requests.get(current_article["url"]).text, 'html.parser')
+        
+    response = client.chat(model='deepseek-r1:8b', messages=[
+    {
+        'role': 'user',
+            'content': f"""Write post based on this news page using language, that used in title of the post: {current_article["title"]}. News page:
+            {soup.body.text[:6400]}
+            Don't write title of post. Write without comments from you. Write only post itself.
+            If you cannot write post based on this information or post isn't interesting and just an advertisement, just write "no" without any other information
+            """
+            ,
+        },
+    ])
+    post_text = markdown.markdown(response['message']['content'])
+    if post_text=="<p>no</p>":
+        continue
+    used_titles.append(current_article["title"])
+    sending_response = requests.post("http:backend:3000/sendpost", data={
+        "postname": current_article["title"],
+        "posttext": post_text,
+        "postcategory": theme
+    })
+    time.sleep(3600*4)

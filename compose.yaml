@@ -13,42 +13,22 @@ services:
 
   llm_service:
     build: llm_service
-    networks:
-      - our_network
     depends_on:
-      ollama:
+      backend:
         condition: service_started
     restart: unless-stopped
 
   ollama:
-    image: ollama/ollama:latest
-    container_name: ollama
+    build: ollama
+    mem_limit: 12g
+    mem_reservation: 6g
     ports:
       - "11435:11434"
     volumes:
-      - ollama_data:/root/.ollama
-      - ./init-models.sh:/init-models.sh:ro
-      - ~.ollama/models:/root/.ollama/models
-    devices:
-      - /dev/dri:/dev/dri
-    entrypoint: >
-      sh -c "ollama serve & ollama run deepseek-r1:8b"
+      - ollama_models:/root/.ollama
     environment:
-      - OLLAMA_HOST=0.0.0.0
-      - OLLAMA_VULKAN=1
+      - OLLAMA_NUM_GPU=0
     restart: unless-stopped
 
-#  model-loader:
-#    image: curlimages/curl:latest
-#    entrypoint: >
-#      sh -c "curl -X POST http://ollama:11434/api/pull -d '{\"name\": \"deepseek-r1:latest\"}'"
-#    restart: "no"
-#    depends_on:
-#      ollama:
-#       condition: service_started
-
 volumes:
-  ollama_data:
-
-networks:
-  our_network:
+  ollama_models:

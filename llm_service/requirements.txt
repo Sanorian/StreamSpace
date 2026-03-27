@@ -1,2 +1,4 @@
 markdown
 requests
+ollama
+bs4
