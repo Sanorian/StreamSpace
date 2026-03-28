@@ -2,6 +2,9 @@ const express = require('express');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.get('/', (req, res)=>{
   res.header('Access-Control-Allow-Origin', '*');
   let db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE, (err) => {
@@ -42,6 +45,7 @@ app.put('/sendpost', (req, res)=>{
         res.send({res:'bad'});
         return console.log(err.message);
       }
+      console.log(`Пост добавлен`);
       res.send({res:'good'});
     });
   });
